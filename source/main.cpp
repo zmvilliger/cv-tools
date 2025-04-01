@@ -122,7 +122,7 @@ int main(int, char**)
     //ImGui_ImplWin32_EnableDpiAwareness();
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
     ::RegisterClassExW(&wc);
-    HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"Dear ImGui DirectX12 Example", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, nullptr, nullptr, wc.hInstance, nullptr);
+    HWND hwnd = ::CreateWindowW(wc.lpszClassName, L"Dear ImGui DirectX12 Example", WS_OVERLAPPEDWINDOW, 100, 100, 720, 920, nullptr, nullptr, wc.hInstance, nullptr);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -163,27 +163,9 @@ int main(int, char**)
     init_info.SrvDescriptorFreeFn = [](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE cpu_handle, D3D12_GPU_DESCRIPTOR_HANDLE gpu_handle) { return g_pd3dSrvDescHeapAlloc.Free(cpu_handle, gpu_handle); };
     ImGui_ImplDX12_Init(&init_info);
 
-    // Before 1.91.6: our signature was using a single descriptor. From 1.92, specifying SrvDescriptorAllocFn/SrvDescriptorFreeFn will be required to benefit from new features.
-    //ImGui_ImplDX12_Init(g_pd3dDevice, APP_NUM_FRAMES_IN_FLIGHT, DXGI_FORMAT_R8G8B8A8_UNORM, g_pd3dSrvDescHeap, g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(), g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
-
-    // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-    // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-    // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
-    // - Read 'docs/FONTS.md' for more instructions and details.
-    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
-    //io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != nullptr);
 
     // Our state
-    bool show_demo_window = true;
+    bool show_demo_window = false;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -197,9 +179,6 @@ int main(int, char**)
     cv::namedWindow("window", cv::WINDOW_NORMAL);
     cv::resizeWindow("window", 1920, 1080);
     std::vector<cv::Mat> channels;
-
-
-
     std::vector<cv::Mat> effectOrder;
 
     ImageFilter filter = init(cap);
@@ -208,20 +187,11 @@ int main(int, char**)
     while (!done)
     {
         /////////////////////////////////// OPENCV /////////////////////////////////////////
-        
         filter.cap.read(filter.img);
         update(filter);
-
-        
-        
         cv::imshow("window", filter.img);
 
-
-
-        
-
         ////////////////////////////// END OPEN CV ///////////////////////////////////
-        
 
      
         // Poll and handle messages (inputs, window resize, etc.)
@@ -252,22 +222,21 @@ int main(int, char**)
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
+
             ImGui::ShowDemoWindow(&show_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static float f = 0.0f;
             static int counter = 0;
+            ImGui::SetNextWindowSize(ImVec2(640, 900), ImGuiCond_Once);
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            
-            
+            ImGui::Begin("Video effects ");                          // Create window with title image effects
             
             ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
             
             /////////////////////////////////// OPENCV PARAMS //////////////////////////////
+
             
             ImGui::Checkbox("Clear effects", &filter.clear);
 
@@ -279,7 +248,6 @@ int main(int, char**)
             ImGui::Checkbox("Edges", &filter.edges);
             ImGui::Checkbox("Blur", &filter.blur);
             ImGui::Checkbox("Isolate hue", &filter.isoHue);
-            //ImGui::Checkbox("Hue/Saturation/Value", &filter.hsv);
 
             ImGui::SliderInt("Blue upper threshold", &filter.blueUpperThreshold, 0, 255);
             ImGui::SliderInt("Blue lower threshold", &filter.blueLowerThreshold, 0, 255);
@@ -299,9 +267,6 @@ int main(int, char**)
             ImGui::SliderInt("Isolate hue upper threshold", &filter.isoHueUpper, 0, 255);
             ImGui::SliderInt("Hue shift", &filter.hueShift, 0, 180);
             
-        
-
-            
             /////////////////////////////////// END OPENCV //////////////////////////////
 
 
@@ -320,7 +285,7 @@ int main(int, char**)
             ImGui::End();
         }
 
-        // 3. Show another simple window.
+         //3. Show another simple window.
         if (show_another_window)
         {
             ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)

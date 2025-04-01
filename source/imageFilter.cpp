@@ -60,32 +60,13 @@ ImageFilter init(cv::VideoCapture cap) {
 
     filter.hueShift = 0;
 
-    return filter;
-
-}
-
-void update(ImageFilter& filter) {
-
-    
-    int low = 5;
-    int upp = 5;
-
-    if (filter.clear) {
-        filter.filterFunctionOrder.clear();
-        filter.effectSet.clear();
-        return;
-    }
-
-
-    ///////////////////// Lambdas for image effect queueing ///////////////////////////
-
     filter.filterFunctionMap["blur"] = [&filter](cv::Mat& img, int sizeX, int sizeY) -> void {
-        cv::blur(filter.img, filter.img, cv::Size(filter.blurKernelX, filter.blurKernelY));  // TODO MAKE BLUR SIZE ADJUSTABLE
+        cv::blur(filter.img, filter.img, cv::Size(filter.blurKernelX, filter.blurKernelY));
         };
 
     filter.filterFunctionMap["edges"] = [&filter](cv::Mat& img, int lower, int upper) -> void {
         cv::Mat resultImg;
-        cv::Canny(filter.img, resultImg, filter.edgesLowerThreshold, filter.edgesUpperThreshold); // TODO MAKE CANNY THRESHOLDS ADJUSTABLE
+        cv::Canny(filter.img, resultImg, filter.edgesLowerThreshold, filter.edgesUpperThreshold);
         resultImg.copyTo(img);
         };
 
@@ -105,16 +86,19 @@ void update(ImageFilter& filter) {
         cv::threshold(filter.img, filter.img, filter.redLowerThreshold, filter.redUpperThreshold, cv::THRESH_TOZERO_INV);
         };
 
+    //TODO this needs to take any pixels to black IF BGR values are all within a range, say 10-20 of each other.
+    filter.filterFunctionMap["cutGrayscale"] = [&filter](cv::Mat& img, int lower, int upper) -> void {
+        cv::threshold(filter.img, filter.img, filter.redLowerThreshold, filter.redUpperThreshold, cv::THRESH_TOZERO_INV);
+        };
+    ///////////////////////
     filter.filterFunctionMap["isoHue"] = [&filter](cv::Mat& img, int lower, int upper) -> void {
         cv::Mat tmp;
         cv::Mat mask;
         cv::Mat resultImg;
 
         cv::cvtColor(filter.img, tmp, cv::COLOR_BGR2HSV);
-        cv::inRange(tmp, cv::Scalar(filter.isoHueLower, 0, 0),
-                              cv::Scalar(filter.isoHueUpper, 255, 255), mask);
+        cv::inRange(tmp, cv::Scalar(filter.isoHueLower, 0, 0), cv::Scalar(filter.isoHueUpper, 255, 255), mask);
         cv::bitwise_and(filter.img, filter.img, resultImg, mask);
-
         filter.img = resultImg;
         };
 
@@ -126,6 +110,19 @@ void update(ImageFilter& filter) {
         cv::add(hsvChannels[0], filter.hueShift, hsvChannels[0]);
         cv::merge(hsvChannels, filter.img);
         };
+    return filter;
+}
+
+void update(ImageFilter& filter) {
+
+    int low = 5;
+    int upp = 5;
+
+    if (filter.clear) {
+        filter.filterFunctionOrder.clear();
+        filter.effectSet.clear();
+        return;
+    }
 
 
     ///////////////////////////////////////////////////////////////////////////////////
@@ -173,6 +170,8 @@ void update(ImageFilter& filter) {
         filter.filterFunctionOrder.push_back(filter.filterFunctionMap["isoHue"]);
         filter.effectSet.insert("isoHue");
     }
+
+    // Apply all effects in order they were clicked
     for (std::function<void(cv::Mat&, int, int)> effect : filterFunctionOrder) {
         effect(filter.img, low, upp);
         std::cout << " effect applied " << std::endl;

@@ -109,6 +109,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)\cvGui\imgui\;$(ProjectDir)\cvGui\imgui\backends\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,14 +141,14 @@
     <ClCompile Include="cvGui\imgui\imgui_draw.cpp" />
     <ClCompile Include="cvGui\imgui\imgui_tables.cpp" />
     <ClCompile Include="cvGui\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="imageFilter.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="source\imageFilter.cpp" />
+    <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cvGui\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="cvGui\imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="cvGui\imgui\imgui.h" />
-    <ClInclude Include="imageFilter.h" />
+    <ClInclude Include="source\imageFilter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

@@ -27,7 +27,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cvGui\imgui\imgui_widgets.cpp">
@@ -51,12 +51,12 @@
     <ClCompile Include="cvGui\imgui\imgui.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="imageFilter.cpp">
+    <ClCompile Include="source\imageFilter.cpp">
       <Filter>Source Files\imageFilter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="imageFilter.h">
+    <ClInclude Include="source\imageFilter.h">
       <Filter>Header Files\imageFilter</Filter>
     </ClInclude>
     <ClInclude Include="cvGui\imgui\backends\imgui_impl_win32.h">

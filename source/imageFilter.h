@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <opencv2/opencv.hpp>
 #include <iostream>
-#include <cstdint>
 #include <map>
 
 
@@ -54,8 +53,11 @@ struct ImageFilter {
 	int isoHueLower;
 	int isoHueUpper;
 
-	std::vector<std::function<void(cv::Mat&, int, int)>> filterFunctionOrder;
+	// Map the effect functions to a string
 	std::map<std::string, std::function<void(cv::Mat&, int, int)>> filterFunctionMap;
+
+	// List of effects to be applied, will be Lambda functions with the context of this entire struct
+	std::vector<std::function<void(cv::Mat&, int, int)>> filterFunctionOrder;
 
 };
 
